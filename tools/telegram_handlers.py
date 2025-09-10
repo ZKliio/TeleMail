@@ -203,3 +203,18 @@ class TelegramHandlers:
             "📧 Email reply feature coming soon!\n"
             "For now, you can reply directly to emails in your email client."
         )
+    
+    async def clear_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+            chat_id = update.effective_chat.id
+            # Number of messages to delete (including the /clear command)
+            num_messages = 20
+
+            # Fetch recent messages
+            for i in range(num_messages):
+                try:
+                # Telegram allows deleting messages by message_id
+                    context.bot.delete_message(chat_id=chat_id, message_id=update.message.message_id - i)
+                except:
+                    pass # Skip if the message cannot be deleted
+
+
