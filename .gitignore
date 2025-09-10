@@ -6,3 +6,18 @@ __pycache__/
 .env
 
 commands
+
+
+email_bot.log
+email_bot.db
+
+
+test.py
+
+## Testing files
+DatabaseManager.py
+email_bot_bala.py
+email_bot.py
+
+# With google api
+secure_email_bot.py

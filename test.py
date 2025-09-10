@@ -43,8 +43,9 @@ class Config:
     ]
     
     # LLM Configuration (for email summarization)
-    GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-    GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
+    LLM_API_KEY = os.getenv("OPEN_API_KEY")
+    # LLM_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
+    LLM_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
     
     # Telegram Bot Configuration
     TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
@@ -305,11 +306,11 @@ class GmailAPIService:
 # ==================== LLM SERVICE ====================
 class LLMService:
     def __init__(self):
-        self.api_key = Config.GEMINI_API_KEY
-        self.api_url = Config.GEMINI_API_URL
+        self.api_key = Config.LLM_API_KEY
+        self.api_url = Config.LLM_API_URL
     
     def summarize_email(self, sender: str, subject: str, body: str) -> str:
-        """Summarize email using Gemini"""
+        """Summarize email using LLM"""
         if not self.api_key:
             # Fallback without LLM
             return f"From: {sender[:30]}\nRe: {subject[:50]}"

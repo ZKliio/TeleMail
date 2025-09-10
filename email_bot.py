@@ -17,25 +17,25 @@ from telegram.ext import Application, CommandHandler, MessageHandler, filters, C
 import sqlite3
 import hashlib
 from dotenv import load_dotenv
-
-from DatabaseManager import DatabaseManager
+from tools.config import Config
+from tools.database_manager import DatabaseManager
 load_dotenv()
 
-# ==================== CONFIGURATION ====================
-class Config:
-    # LLM API Configuration (Initialize with your preferred LLM)
-    LLM_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"  # Changed to OpenAI format
-    LLM_API_KEY = os.getenv("OPENAI_API_KEY")  # Your OpenAI API key
-    LLM_MODEL = "Gemini 2.5 Flash"  # Changed to OpenAI model
+# # ==================== CONFIGURATION ====================
+# class Config:
+#     # LLM API Configuration (Initialize with your preferred LLM)
+#     LLM_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"  # Changed to OpenAI format
+#     LLM_API_KEY = os.getenv("OPENAI_API_KEY")  # Your OpenAI API key
+#     LLM_MODEL = "Gemini 2.5 Flash"  # Changed to OpenAI model
     
-    # Telegram Bot Configuration
-    TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")  # Replace with your bot token
+#     # Telegram Bot Configuration
+#     TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")  # Replace with your bot token
     
-    # Email Configuration (will be set per user)
-    DATABASE_PATH = "email_bot.db"
+#     # Email Configuration (will be set per user)
+#     DATABASE_PATH = "email_bot.db"
     
-    # Security
-    VERIFICATION_CODE_EXPIRY = 300  # 5 minutes
+#     # Security
+#     VERIFICATION_CODE_EXPIRY = 300  # 5 minutes
 
 # ==================== EMAIL SUMMARIZATION PROMPT ====================
 EMAIL_SUMMARY_PROMPT = """
