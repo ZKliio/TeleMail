@@ -212,9 +212,11 @@ class TelegramHandlers:
             # Fetch recent messages
             for i in range(num_messages):
                 try:
-                # Telegram allows deleting messages by message_id
-                    context.bot.delete_message(chat_id=chat_id, message_id=update.message.message_id - i)
-                except:
+                    await context.bot.delete_message(
+                    chat_id=chat_id,
+                    message_id=update.message.message_id - i
+            )
+                except Exception as e:
                     pass # Skip if the message cannot be deleted
 
 
