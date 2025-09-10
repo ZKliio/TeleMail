@@ -41,7 +41,6 @@ TELEMAIL
 │   ├── schema.sql
 │   ├── telegram_handlers.py
 │   └── verification_service.py
-├── .env
 ├── .env.example
 ├── .gitignore
 ├── main.py
