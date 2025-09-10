@@ -4,7 +4,8 @@ Main bot application
 """
 import asyncio
 import logging
-from telegram.ext import Application, CommandHandler, MessageHandler, filters
+from telegram.ext import Application, CommandHandler, CallbackQueryHandler, MessageHandler, filters, CallbackContext
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update 
 
 from tools.config import Config
 from tools.database_manager import DatabaseManager
@@ -37,10 +38,11 @@ class EmailTelegramBot:
         self.app.add_handler(CommandHandler("verify", self.handlers.verify_command))
         self.app.add_handler(CommandHandler("status", self.handlers.status_command))
         self.app.add_handler(CommandHandler("stop", self.handlers.stop_command))
+        self.app.add_handler(CommandHandler("clear", self.handlers.clear_command))
         self.app.add_handler(
             MessageHandler(filters.TEXT & ~filters.COMMAND, self.handlers.handle_message)
         )
-    
+
     async def initialize(self):
         """Initialize the bot and start monitoring existing users"""
         await self.monitoring.start_all_verified_users()
