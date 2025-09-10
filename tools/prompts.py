@@ -48,20 +48,20 @@ Type any message to reply to the last email.
     SETUP_MESSAGE = """
 📧 **Email Setup**
 
-Please provide your email details in this format:
-`email@domain.com|password|imap_server|imap_port|smtp_server|smtp_port`
+Provide your email details as follows:
+`email@domain.com app_password`
 
-**Common configurations:**
+**Necessary configurations:**
+----------------------------------------------------
+Create an App Password at 
+https://myaccount.google.com/apppasswords
 
-**Gmail:**
-`your@gmail.com|app_password|imap.gmail.com|993|smtp.gmail.com|587`
 
-**Outlook:**
-`your@outlook.com|password|outlook.office365.com|993|smtp.office365.com|587`
+Requires 2-Step Verification 
+Enable in your Google Account Settings > Security
 
 **Note:** For Gmail, use an App Password, not your regular password!
-    """
-    
+"""
     VERIFICATION_EMAIL_TEMPLATE = """
 Email Summary Bot Verification
 
