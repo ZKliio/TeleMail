@@ -18,6 +18,7 @@ test.py
 DatabaseManager.py
 email_bot_bala.py
 email_bot.py
+test.py
 
 # With google api
 secure_email_bot.py
