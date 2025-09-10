@@ -61,16 +61,14 @@ py main.py
 ```
 
 ## User side setup
-
-First step is to set up their Gmail with 2FA and acquire an App password
-
-### Authentication Security:
-
 - User needs to allow IMAP access with auto-expunge on
 <p align="left">
       <img src="images/image.png" alt="Imap image" width="600">
     </p>
-	
+
+### Authentication Security:
+- User sets up their Gmail with 2FA and acquire an App password
+	- They will copy this 16 digit code to later be used in their tele bot set up
 - Users verify email ownership with codes sent to their email
 	- Verification codes expire in 5 minutes
 	- Only verified users receive summaries
