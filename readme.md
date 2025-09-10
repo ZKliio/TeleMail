@@ -24,7 +24,28 @@ The younger generation today is often new to traditional emails and more accusto
 ### Quick code tree
 
 ```python
-tree
+TELEMAIL
+├── images
+│   ├── image.png
+│   └── image2.png
+├── tools
+│   ├── __pycache__/
+│   ├── bot.py
+│   ├── config.py
+│   ├── database_manager.py
+│   ├── email_service.py
+│   ├── llm_service.py
+│   ├── models.py
+│   ├── monitoring_manager.py
+│   ├── prompts.py
+│   ├── schema.sql
+│   ├── telegram_handlers.py
+│   └── verification_service.py
+├── .env.example
+├── .gitignore
+├── main.py
+├── readme.md
+└── requirements.txt
 ```
 
 ### To start clone the repo with the following command.
