@@ -24,7 +24,28 @@ The younger generation today is often new to traditional emails and more accusto
 ### Quick code tree
 
 ```python
-tree
+TELEMAIL
+├── images
+│   ├── image.png
+│   └── image2.png
+├── tools
+│   ├── __pycache__/
+│   ├── bot.py
+│   ├── config.py
+│   ├── database_manager.py
+│   ├── email_service.py
+│   ├── llm_service.py
+│   ├── models.py
+│   ├── monitoring_manager.py
+│   ├── prompts.py
+│   ├── schema.sql
+│   ├── telegram_handlers.py
+│   └── verification_service.py
+├── .env.example
+├── .gitignore
+├── main.py
+├── readme.md
+└── requirements.txt
 ```
 
 ### To start clone the repo with the following command.
@@ -61,16 +82,14 @@ py main.py
 ```
 
 ## User side setup
-
-First step is to set up their Gmail with 2FA and acquire an App password
-
-### Authentication Security:
-
 - User needs to allow IMAP access with auto-expunge on
 <p align="left">
       <img src="images/image.png" alt="Imap image" width="600">
     </p>
-	
+
+### Authentication Security:
+- User sets up their Gmail with 2FA and acquire an App password
+	- They will copy this 16 digit code to later be used in their tele bot set up
 - Users verify email ownership with codes sent to their email
 	- Verification codes expire in 5 minutes
 	- Only verified users receive summaries

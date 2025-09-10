@@ -2,6 +2,7 @@
 """
 Telegram bot command handlers
 """
+import re
 import logging
 from telegram import Update
 from telegram.ext import ContextTypes
@@ -28,59 +29,112 @@ class TelegramHandlers:
     async def setup_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Handle /setup command"""
         await update.message.reply_text(Prompts.SETUP_MESSAGE, parse_mode='Markdown')
+
     
-    async def handle_setup_data(self, update: Update, setup_data: str):
-        """Process email setup data"""
-        try:
-            parts = setup_data.split('|')
-            if len(parts) != 6:
-                await update.message.reply_text(
-                    "❌ Invalid format. Please use: email|password|imap_server|imap_port|smtp_server|smtp_port"
-                )
-                return
+    # async def handle_setup_data(self, update: Update, setup_data: str):
+    #     """Process email setup data"""
+    #     try:
+    #         parts = setup_data.split('|')
+    #         if len(parts) != 6:
+    #             await update.message.reply_text(
+    #                 "❌ Invalid format. Please use: email|password|imap_server|imap_port|smtp_server|smtp_port"
+    #             )
+    #             return
             
+    #         email_addr, password, imap_server, imap_port, smtp_server, smtp_port = parts
+    #         telegram_id = update.message.from_user.id
+            
+    #         # Create user
+    #         user = User(
+    #             telegram_id=telegram_id,
+    #             email=email_addr,
+    #             password=password,
+    #             imap_server=imap_server,
+    #             imap_port=int(imap_port),
+    #             smtp_server=smtp_server,
+    #             smtp_port=int(smtp_port)
+    #         )
+            
+    #         # Store user data
+    #         self.db.add_user(
+    #             telegram_id, email_addr, password, 
+    #             imap_server, int(imap_port), smtp_server, int(smtp_port)
+    #         )
+            
+    #         # Generate and send verification code
+    #         verification_code = self.verification.generate_verification_code()
+    #         self.db.store_verification_code(telegram_id, verification_code)
+            
+    #         # Send verification email
+    #         if self.verification.send_verification_email(
+    #             email_addr, password, smtp_server, int(smtp_port), verification_code
+    #         ):
+    #             await update.message.reply_text(
+    #                 f"✅ Setup saved! Check your email for verification code.\n"
+    #                 f"Use `/verify {verification_code}` to complete setup."
+    #             )
+    #         else:
+    #             await update.message.reply_text(
+    #                 "❌ Failed to send verification email. Please check your email settings."
+    #             )
+                
+    #     except Exception as e:
+    #         self.logger.error(f"Setup error: {e}")
+    #         await update.message.reply_text(
+    #             "❌ Setup failed. Please check your email settings and try again."
+    #         )
+
+    async def handle_setup_data(self, update: Update, setup_data: str):
+        """Process email setup data using regex for Gmail + app password"""
+        try:
+            setup_data = setup_data.strip()
+            parts = setup_data.split('|')
+            print(setup_data)
+            print(parts)
+            # Regex for Gmail + 4x4 app password
+            match = re.match(r'([a-zA-Z0-9._%+-]+@gmail\.com)\s+([a-zA-Z]{4}\s?[a-zA-Z]{4}\s?[a-zA-Z]{4}\s?[a-zA-Z]{4})$', setup_data)
+            if match:
+                print("ur mom")
+                email_addr = match.group(1)
+                print(email_addr)
+                password = match.group(2).replace(' ', '')  # remove spaces
+                print(password)
+                imap_server, imap_port = "imap.gmail.com", "993"
+                smtp_server, smtp_port = "smtp.gmail.com", "587"
+                parts = [email_addr, password, imap_server, imap_port, smtp_server, smtp_port]
+
+            if len(parts) != 6:
+                await update.message.reply_text("❌ Invalid format. Use either:\n"
+                                                "`email|password|imap|port|smtp|port`\n"
+                                                "or simply: `<gmail_username> <password>`")
+                return
+
             email_addr, password, imap_server, imap_port, smtp_server, smtp_port = parts
             telegram_id = update.message.from_user.id
-            
-            # Create user
-            user = User(
-                telegram_id=telegram_id,
-                email=email_addr,
-                password=password,
-                imap_server=imap_server,
-                imap_port=int(imap_port),
-                smtp_server=smtp_server,
-                smtp_port=int(smtp_port)
-            )
-            
+
             # Store user data
             self.db.add_user(
-                telegram_id, email_addr, password, 
+                telegram_id, email_addr, password,
                 imap_server, int(imap_port), smtp_server, int(smtp_port)
             )
-            
+
             # Generate and send verification code
             verification_code = self.verification.generate_verification_code()
             self.db.store_verification_code(telegram_id, verification_code)
-            
+
             # Send verification email
-            if self.verification.send_verification_email(
-                email_addr, password, smtp_server, int(smtp_port), verification_code
-            ):
+            if self.verification.send_verification_email(email_addr, password, smtp_server, int(smtp_port), verification_code):
                 await update.message.reply_text(
                     f"✅ Setup saved! Check your email for verification code.\n"
-                    f"Use `/verify {verification_code}` to complete setup."
+                    f"Use `/verify code` to complete setup."
                 )
             else:
-                await update.message.reply_text(
-                    "❌ Failed to send verification email. Please check your email settings."
-                )
-                
+                await update.message.reply_text("❌ Failed to send verification email. Please check your email settings.")
+
         except Exception as e:
-            self.logger.error(f"Setup error: {e}")
-            await update.message.reply_text(
-                "❌ Setup failed. Please check your email settings and try again."
-            )
+            logging.error(f"Setup error: {e}")
+            await update.message.reply_text("❌ Setup failed. Please check your email settings and try again.")
+
     
     async def verify_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Handle /verify command"""
@@ -132,7 +186,7 @@ class TelegramHandlers:
         telegram_id = update.message.from_user.id
         
         # Check if it's setup data
-        if '|' in message_text and '@' in message_text:
+        if '|' in message_text or '@' in message_text:
             await self.handle_setup_data(update, message_text)
             return
         
@@ -143,7 +197,7 @@ class TelegramHandlers:
                 "❌ Please complete email setup and verification first."
             )
             return
-        
+            
         # Handle email reply (placeholder for now)
         await update.message.reply_text(
             "📧 Email reply feature coming soon!\n"

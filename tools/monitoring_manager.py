@@ -67,7 +67,9 @@ class MonitoringManager:
                     # Send summaries via Telegram
                     if summaries:
                         await self._send_summaries_to_user(telegram_id, summaries)
-                    
+                        self.logger.info(f"Found {len(summaries)} new emails for user {telegram_id}")
+
+
                     # Wait before checking again
                     await asyncio.sleep(Config.EMAIL_CHECK_INTERVAL)
                     
