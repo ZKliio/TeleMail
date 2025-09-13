@@ -10,7 +10,8 @@ commands
 
 email_bot.log
 email_bot.db
-
+email.db
+emails.db
 
 test.py
 
