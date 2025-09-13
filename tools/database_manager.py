@@ -2,6 +2,7 @@ import sqlite3
 from datetime import datetime, timedelta
 import os
 from tools.config import Config
+
 class DatabaseManager:
     
     def __init__(self, db_path: str):
@@ -14,7 +15,6 @@ class DatabaseManager:
         # Create tables from schema.sql
         with open(os.path.join(os.path.dirname(__file__), 'schema.sql'), "r", encoding="utf-8") as f:
             cursor.executescript(f.read())
-            
         conn.commit()
         conn.close()
     
@@ -86,9 +86,7 @@ class DatabaseManager:
     def is_email_processed(self, user_id: int, email_id: str) -> bool:
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
-        cursor.execute('''
-            SELECT 1 FROM processed_emails WHERE user_id = ? AND email_id = ?
-        ''', (user_id, email_id))
+        cursor.execute('SELECT 1 FROM processed_emails WHERE user_id = ? AND email_id = ?', (user_id, email_id))
         result = cursor.fetchone()
         conn.close()
         return result is not None
@@ -100,6 +98,3 @@ class DatabaseManager:
         users = cursor.fetchall()
         conn.close()
         return users
-    
-# Example test usage:
-# db_manager = DatabaseManager('test.db')

@@ -13,10 +13,10 @@ from tools.llm_service import LLMService
 from tools.email_service import EmailService
 from tools.monitoring_manager import MonitoringManager
 from tools.telegram_handlers import TelegramHandlers
+from tools.mail_command import MailCommand 
 
 class EmailTelegramBot:
     """Main bot application class"""
-    
     def __init__(self):
         # Initialize services
         self.db = DatabaseManager(Config.DATABASE_PATH)
@@ -39,6 +39,10 @@ class EmailTelegramBot:
         self.app.add_handler(CommandHandler("status", self.handlers.status_command))
         self.app.add_handler(CommandHandler("stop", self.handlers.stop_command))
         self.app.add_handler(CommandHandler("clear", self.handlers.clear_command))
+        email_service = EmailService(self.db)
+        mail_command = MailCommand(email_service,self.llm)   
+        self.app.add_handler(CommandHandler("send", mail_command.handle_send)) 
+        self.app.add_handler(CommandHandler("mail", mail_command.handle_mail))  
         self.app.add_handler(
             MessageHandler(filters.TEXT & ~filters.COMMAND, self.handlers.handle_message)
         )
@@ -61,7 +65,12 @@ class EmailTelegramBot:
             loop.run_until_complete(self.initialize())
             
             # Start the bot
-            self.app.run_polling()
+            self.app.run_polling(
+                allowed_updates=Update.ALL_TYPES,
+                close_loop= False
+            )
+        except Exception as e:
+            self.logger.error(f"Bot crashed: {e}")
         finally:
             # Cleanup
             self.monitoring.cleanup()

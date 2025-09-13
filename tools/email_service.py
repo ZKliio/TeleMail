@@ -14,14 +14,57 @@ from datetime import datetime
 from tools.models import User, EmailSummary
 from tools.llm_service import LLMService
 from tools.config import Config
+from tools.database_manager import DatabaseManager
 
 class EmailService:
     """Service for email operations"""
-    
     def __init__(self, db_manager, llm_service: Optional[LLMService] = None):
-        self.db = db_manager
+        self.db: DatabaseManager = db_manager
         self.llm = llm_service or LLMService()
         self.logger = logging.getLogger(__name__)
+
+    # Send email using credentials stored in DB
+    def send_email(self, telegram_id: int, to: str, subject: str, body: str) -> bool:
+        print("Using DB file:", self.db.db_path)
+        user_data = self.db.get_user(telegram_id)
+        #if not user_data:
+            #self.logger.error(f"No email account found for telegram_id {telegram_id}")
+            #return False
+        
+        email_address = user_data[1]
+        email_password = user_data[2]
+        smtp_server = user_data[5]
+        smtp_port = user_data[6]
+
+        try:
+            msg = MIMEMultipart()
+            msg['From'] = email_address
+            msg['To'] = to
+            msg['Subject'] = subject
+            msg.attach(MIMEText(body, 'plain'))
+
+            with smtplib.SMTP(smtp_server, smtp_port) as server:
+                server.starttls()
+                server.login(email_address, email_password)
+                server.send_message(msg)
+            
+            return True
+        except Exception as e:
+            self.logger.error(f"Failed to send email for {email_address}: {e}")
+            return False
+
+    # IMAP connection to check inbox
+    def connect_to_email(self, telegram_id: int) -> Optional[imaplib.IMAP4_SSL]:
+        user_data = self.db.get_user(telegram_id)
+        if not user_data:
+            return None
+        try:
+            mail = imaplib.IMAP4_SSL(user_data[3], user_data[4])  # email_server, email_port
+            mail.login(user_data[1], user_data[2])  # email_address, email_password
+            return mail
+        except Exception as e:
+            self.logger.error(f"Email connection failed for {user_data[1]}: {e}")
+            return None
     
     def connect_to_email(self, user: User) -> Optional[imaplib.IMAP4_SSL]:
         """

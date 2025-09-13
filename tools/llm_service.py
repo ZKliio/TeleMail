@@ -117,3 +117,79 @@ class LLMService:
     def _fallback_summary(self, sender: str, subject: str) -> str:
         """Create fallback summary when LLM fails"""
         return f"📧 {sender}: {subject}"
+    
+    def generate_email(self, user_text: str, tone: str) -> str:
+        """
+        Generate a formal or informal email from user text
+        """
+        try:
+            prompt = f"Write a {tone} email from the following text:\n\n{user_text} VERY IMPORTANT write everything EXCEPT the subject so start from the main no need for a subject start straight with Dear or Hi or whtver the"
+
+            # Gemini style request (since your summarize_email also uses this)
+            url = f"{self.api_url}?key={self.api_key}"
+            headers = {"Content-Type": "application/json"}
+
+            payload = {
+                "contents": [
+                    {"parts": [{"text": prompt}]}
+                ],
+                "generationConfig": {
+                    "temperature": 0.7,
+                    "maxOutputTokens": 500
+                }
+            }
+
+            response = requests.post(url, headers=headers, json=payload, timeout=30)
+
+            if response.status_code == 200:
+                result = response.json()
+                candidates = result.get("candidates", [])
+                if candidates:
+                    parts = candidates[0].get("content", {}).get("parts", [])
+                    if parts:
+                        return parts[0].get("text", "").strip()
+                return f"(Failed to generate {tone} email)"
+            else:
+                self.logger.error(f"LLM API error: {response.status_code} - {response.text}")
+                return f"(Failed to generate {tone} email)"
+        except Exception as e:
+            self.logger.error(f"Error generating email: {e}")
+            return f"(Error generating {tone} email)"
+        
+    def generate_email_subject(self, user_text: str, tone: str) -> str:
+        """
+        Generate a suitable email subject from user text.
+        """
+        try:
+            prompt = f"Write a concise email subject for a {tone} email based on this content:\n\n{user_text} no need for redundencies straight to the point output just one nice Subject that you think would suit the best but dont put Subject: infrotn just the name/phrase/sentence for the subject as an output is enough"
+
+            url = f"{self.api_url}?key={self.api_key}"
+            headers = {"Content-Type": "application/json"}
+            payload = {
+                "contents": [
+                    {"parts": [{"text": prompt}]}
+                ],
+                "generationConfig": {
+                    "temperature": 0.5,
+                    "maxOutputTokens": 50
+                }
+            }
+
+            response = requests.post(url, headers=headers, json=payload, timeout=30)
+
+            if response.status_code == 200:
+                result = response.json()
+                candidates = result.get("candidates", [])
+                if candidates:
+                    parts = candidates[0].get("content", {}).get("parts", [])
+                    if parts:
+                        return parts[0].get("text", "").strip()
+                return "(No subject generated)"
+            else:
+                self.logger.error(f"LLM API error: {response.status_code} - {response.text}")
+                return "(No subject generated)"
+        except Exception as e:
+            self.logger.error(f"Error generating email subject: {e}")
+            return "(Error generating subject)"
+
+

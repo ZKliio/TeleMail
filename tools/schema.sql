@@ -1,6 +1,3 @@
-DROP TABLE IF EXISTS users;
-DROP TABLE IF EXISTS processed_emails;
-
 CREATE TABLE IF NOT EXISTS users (
                 telegram_id INTEGER PRIMARY KEY,
                 email_address TEXT UNIQUE,
