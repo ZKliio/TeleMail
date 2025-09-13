@@ -48,18 +48,16 @@ Type any message to reply to the last email.
     SETUP_MESSAGE = """
 📧 **Email Setup**
 
-Provide your email details as follows:
-`email@domain.com app_password`
-
 **Necessary configurations:**
 ----------------------------------------------------
+Enable 2-Step Verification at
+https://myaccount.google.com/u/0/signinoptions/twosv
+
 Create an App Password at 
 https://myaccount.google.com/apppasswords
 
-
-Requires 2-Step Verification 
-Enable in your Google Account Settings > Security
-
+Provide your details as follows:
+`email@domain.com app_password`
 **Note:** For Gmail, use an App Password, not your regular password!
 """
     VERIFICATION_EMAIL_TEMPLATE = """
